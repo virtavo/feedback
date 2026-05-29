@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, List, Columns, PlusCircle, BarChart3, Settings, FileText, ChevronLeft, ChevronRight, Bell, Search, Zap, Code2, Briefcase } from 'lucide-react';
+import XiaoMo from '@/components/XiaoMo';
 import { useBrandStore } from '@/store/brandStore';
 
 const OPS_NAV = [
@@ -144,6 +145,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </header>
         <main style={{ flex: 1, overflowY: 'auto', background: '#F0F4F8', padding: 24 }}>{children}</main>
       </div>
+      <XiaoMo />
     </div>
   );
 }
