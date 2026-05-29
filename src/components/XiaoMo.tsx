@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { X, Send, Bot, Zap, FileUp, BarChart2, HelpCircle, Sparkles, Settings2, AlertCircle } from 'lucide-react';
+import { X, Send, Bot, Zap, FileUp, BarChart2, HelpCircle, Sparkles, Settings2, AlertCircle, Paperclip } from 'lucide-react';
+import * as XLSX from 'xlsx';
 import { MOCK_ISSUES, TEAM_MEMBERS } from '@/data';
 import { useBrandStore } from '@/store/brandStore';
 import { useNavigate } from 'react-router-dom';
@@ -155,8 +156,30 @@ export default function XiaoMo() {
   const [openHistory, setOpenHistory] = useState<{ role: string; content: string }[]>([]);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef  = useRef<HTMLInputElement>(null);
+  const fileRef   = useRef<HTMLInputElement>(null);
   const { activeBrand } = useBrandStore();
   const nav = useNavigate();
+
+  const handleFile = useCallback((file: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const data = new Uint8Array(e.target!.result as ArrayBuffer);
+        const wb   = XLSX.read(data, { type: 'array' });
+        const ws   = wb.Sheets[wb.SheetNames[0]];
+        const rows: string[][] = XLSX.utils.sheet_to_json(ws, { header: 1 });
+        if (!rows.length) { sendMsg('文件内容为空，请检查文件。'); return; }
+        const header = rows[0].join(' | ');
+        const body   = rows.slice(1, 51).map(r => r.join(' | ')).join('\n');
+        const total  = rows.length - 1;
+        const prompt = `我上传了一份问题列表文件「${file.name}」，共 ${total} 条数据。\n\n表头：${header}\n\n前 ${Math.min(total,50)} 条数据：\n${body}\n\n请帮我：\n1. 总结主要问题类型和分布\n2. 找出高频/高优先级问题\n3. 给出处理建议`;
+        sendMsg(prompt);
+      } catch {
+        sendMsg('文件解析失败，请确认是 Excel (.xlsx) 或 CSV 格式。');
+      }
+    };
+    reader.readAsArrayBuffer(file);
+  }, []);
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [msgs, typing]);
   useEffect(() => { if (open) { setTimeout(() => inputRef.current?.focus(), 120); setCfgForm(getAiConfig()); } }, [open]);
@@ -335,7 +358,13 @@ export default function XiaoMo() {
               </div>
             )}
             <div style={{ display:'flex', gap:7, alignItems:'center', background:'#f8fafc', borderRadius:13, padding:'6px 6px 6px 13px', border:'1.5px solid #e2e8f0' }}>
-              <input ref={inputRef} value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>e.key==='Enter'&&!e.shiftKey&&sendMsg(input)} placeholder={hasKey?'问我任何售后问题…':'请先配置 API Key'} style={{ flex:1, border:'none', background:'transparent', fontSize:13, color:'#1a2035', outline:'none' }}/>
+              <input ref={inputRef} value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>e.key==='Enter'&&!e.shiftKey&&sendMsg(input)} placeholder={hasKey?'问我任何售后问题，或上传文件总结…':'请先配置 API Key'} style={{ flex:1, border:'none', background:'transparent', fontSize:13, color:'#1a2035', outline:'none' }}/>
+              <input ref={fileRef} type="file" accept=".xlsx,.xls,.csv" style={{ display:'none' }} onChange={e=>{ const f=e.target.files?.[0]; if(f) handleFile(f); e.target.value=''; }}/>
+              <button onClick={()=>fileRef.current?.click()} title="上传问题列表文件" style={{ width:34, height:34, borderRadius:10, background:'#f1f5f9', border:'none', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}
+                onMouseEnter={e=>{e.currentTarget.style.background='#4FA7A018';}}
+                onMouseLeave={e=>{e.currentTarget.style.background='#f1f5f9';}}>
+                <Paperclip size={14} color="#94a3b8"/>
+              </button>
               <button onClick={()=>sendMsg(input)} disabled={!input.trim()||typing} style={{ width:34, height:34, borderRadius:10, background: input.trim()&&!typing?'linear-gradient(135deg,#4FA7A0,#6C63FF)':'#e2e8f0', border:'none', cursor: input.trim()&&!typing?'pointer':'default', display:'flex', alignItems:'center', justifyContent:'center', transition:'all 0.15s', flexShrink:0 }}>
                 <Send size={14} color={input.trim()&&!typing?'#fff':'#94a3b8'}/>
               </button>
