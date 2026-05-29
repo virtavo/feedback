@@ -1,0 +1,20 @@
+// Do not edit manually
+
+export const IMAGES = {
+  CROPPED_IMAGE_0_1780033516072084599_8: "/images/cropped_image_0_1780033516072084599.jpg",
+  CROPPED_IMAGE_0_1780033516325495863_3: "/images/cropped_image_0_1780033516325495863.jpg",
+  CROPPED_IMAGE_16_1780033517332264941_10: "/images/cropped_image_16_1780033517332264941.jpg",
+  CROPPED_IMAGE_1_1780033516058286050_9: "/images/cropped_image_1_1780033516058286050.jpg",
+  CROPPED_IMAGE_1_1780033516189650935_6: "/images/cropped_image_1_1780033516189650935.jpg",
+  CROPPED_IMAGE_1_1780033516273623226_7: "/images/cropped_image_1_1780033516273623226.jpg",
+  CROPPED_IMAGE_1_1780033516311285926_1: "/images/cropped_image_1_1780033516311285926.jpg",
+  CROPPED_IMAGE_1_1780033516364397006_2: "/images/cropped_image_1_1780033516364397006.jpg",
+  CROPPED_IMAGE_1_1780033516451630014_4: "/images/cropped_image_1_1780033516451630014.jpg",
+  CROPPED_IMAGE_1_1780033516454527688_5: "/images/cropped_image_1_1780033516454527688.jpg",
+  IMG_1335_13: "/images/截图1335.png",
+  IMG_4286_12: "/images/截图4286.png",
+  IMG_6624_11: "/images/截图6624.png",
+  IMG_8989_14: "/images/截图8989.png",
+} as const;
+
+export type ImageKey = keyof typeof IMAGES;

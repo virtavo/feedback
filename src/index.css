@@ -1,0 +1,212 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap");
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+==========================================================================
+【AI HANDOVER NOTE】
+1. DESIGN PHILOSOPHY:
+   - Atmosphere-First Dashboard Design: 参考截图风格，采用 Bento/Modular surfaces 布局，强调卡片化、清晰边界与视觉层次
+   - Neo-minimalism with Physicality: 大圆角(16px)、柔和投影、充足留白，营造轻盈现代感，同时通过微妙的 rim-light 效果增强卡片立体感
+   - Dual-Brand Visual Identity: VIRTAVO 使用 Muted Teal (#4FA7A0) 作为主色，传递专业、可靠的技术感；ShowMo 使用青柠绿 (#D1E83E) + 深橄榄背景 (#25291C)，营造活力、创新的品牌气质
+   - 设计风格融合截图6624的蓝色系卡片布局、截图4286的柔和绿色调、截图1335的深绿配色方案、截图8989的奶油米色+深色对比，形成统一且富有层次的视觉语言
+
+2. TYPOGRAPHY:
+   - Sans 字体选择 Inter + Noto Sans SC: Inter 具备优秀的屏幕可读性与现代几何美感，适合 Dashboard 的数据密集场景；Noto Sans SC 确保中文显示的专业性与一致性
+   - Mono 字体 JetBrains Mono: 用于问题编号、时间戳、技术参数等数据展示，清晰的字符区分度提升信息扫描效率
+   - 字体层级：大标题(Welcome/Dashboard 总览)使用 700 weight，卡片标题 600 weight，正文 400-500 weight，确保清晰的信息架构
+
+3. COLOR SYSTEM:
+   - 品牌主色设计逻辑：
+     * VIRTAVO Muted Teal (Hue ~180°): 色相选择青绿色系，传递技术产品的稳定性与专业感，映射到 --primary (卡片主操作)、--accent (数据高亮)、--ring (焦点状态)
+     * ShowMo 青柠绿 (Hue ~75°): 高饱和度黄绿色，映射到 --accent，搭配深橄榄 --sidebar 背景，形成强烈视觉对比
+   - 浅色模式：background 使用 #F0F4F8 对应的 OKLCH (L=0.96)，营造柔和的灰白基调；卡片 card 为纯白 (L=0.99)，确保层次分明
+   - 深色模式：background 深邃 (L=0.12)，foreground 高亮度 (L=0.92)，确保 WCAG AA 对比度；品牌色饱和度略提升以适应深色背景
+   - 语义色：destructive 使用暖红橙 (Hue ~15°) 表示高优先级/已关闭问题；success 使用青绿 (Hue ~150°) 表示已解决状态；warning 使用琥珀橙 (Hue ~50°) 表示待确认/搁置中
+
+4. USAGE GUIDE:
+   - 布局类型：Dashboard full-width layout，顶部导航栏 + 侧边栏(可折叠)，主内容区采用 Grid/Flexbox 响应式卡片布局
+   - 推荐特效：卡片使用 backdrop-blur(8px) + 柔和投影 (shadow-sm)，hover 状态添加 rim-light 效果 (box-shadow: 0 0 0 1px oklch(var(--ring) / 0.2))，提升交互反馈
+   - 品牌区分实现：通过 data-brand="virtavo" 或 data-brand="showmo" 属性切换 CSS 变量，动态应用对应品牌色到 --primary/--accent/--sidebar
+   - 问题来源标签：使用 badge 组件，APP工单(--primary)、邮件(--secondary)、运营反馈(--accent)，确保视觉可区分性
+   - 状态流转可视化：Kanban 看板使用不同 --muted 色阶表示状态列，时间线组件使用 --ring 连接线 + 状态节点颜色映射
+   - 数据统计图表：Chart.js/Recharts 使用 --chart-1 到 --chart-5 的渐变色系，确保多维数据的视觉区分度
+   - 国家/产品筛选：Dropdown 组件使用 --popover 背景 + --border 分隔线，选中项高亮 --accent-foreground
+==========================================================================
+*/
+
+:root {
+  /* Typography */
+  --font-sans: Inter, 'Noto Sans SC', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+  
+  /* Radius */
+  --radius: 1rem;
+
+  /* Core UI Tokens */
+  --background: oklch(0.96 0.008 240);
+  --foreground: oklch(0.22 0.015 240);
+  --card: oklch(0.99 0.002 240);
+  --card-foreground: oklch(0.22 0.015 240);
+  --popover: oklch(0.99 0.002 240);
+  --popover-foreground: oklch(0.22 0.015 240);
+  --primary: oklch(0.58 0.095 180);
+  --primary-foreground: oklch(0.99 0.002 180);
+  --secondary: oklch(0.92 0.012 240);
+  --secondary-foreground: oklch(0.28 0.018 240);
+  --muted: oklch(0.94 0.01 240);
+  --muted-foreground: oklch(0.52 0.015 240);
+  --accent: oklch(0.88 0.14 75);
+  --accent-foreground: oklch(0.25 0.02 75);
+  --destructive: oklch(0.62 0.22 15);
+  --destructive-foreground: oklch(0.99 0.002 15);
+  --border: oklch(0.88 0.01 240);
+  --input: oklch(0.88 0.01 240);
+  --ring: oklch(0.58 0.095 180);
+  
+  /* Chart Tokens */
+  --chart-1: oklch(0.62 0.18 180);
+  --chart-2: oklch(0.68 0.16 150);
+  --chart-3: oklch(0.72 0.14 210);
+  --chart-4: oklch(0.58 0.12 75);
+  --chart-5: oklch(0.65 0.15 240);
+  
+  /* Sidebar Tokens */
+  --sidebar: oklch(0.98 0.005 240);
+  --sidebar-foreground: oklch(0.28 0.018 240);
+  --sidebar-primary: oklch(0.58 0.095 180);
+  --sidebar-primary-foreground: oklch(0.99 0.002 180);
+  --sidebar-accent: oklch(0.88 0.14 75);
+  --sidebar-accent-foreground: oklch(0.25 0.02 75);
+  --sidebar-border: oklch(0.88 0.01 240);
+  --sidebar-ring: oklch(0.58 0.095 180);
+}
+
+.dark {
+  --background: oklch(0.12 0.015 240);
+  --foreground: oklch(0.92 0.008 240);
+  --card: oklch(0.16 0.018 240);
+  --card-foreground: oklch(0.92 0.008 240);
+  --popover: oklch(0.16 0.018 240);
+  --popover-foreground: oklch(0.92 0.008 240);
+  --primary: oklch(0.65 0.12 180);
+  --primary-foreground: oklch(0.12 0.015 180);
+  --secondary: oklch(0.22 0.02 240);
+  --secondary-foreground: oklch(0.88 0.008 240);
+  --muted: oklch(0.2 0.018 240);
+  --muted-foreground: oklch(0.62 0.012 240);
+  --accent: oklch(0.82 0.18 75);
+  --accent-foreground: oklch(0.15 0.025 75);
+  --destructive: oklch(0.68 0.25 15);
+  --destructive-foreground: oklch(0.95 0.005 15);
+  --border: oklch(0.25 0.02 240);
+  --input: oklch(0.25 0.02 240);
+  --ring: oklch(0.65 0.12 180);
+  
+  /* Chart Tokens */
+  --chart-1: oklch(0.68 0.2 180);
+  --chart-2: oklch(0.72 0.18 150);
+  --chart-3: oklch(0.75 0.16 210);
+  --chart-4: oklch(0.65 0.15 75);
+  --chart-5: oklch(0.7 0.17 240);
+  
+  /* Sidebar Tokens */
+  --sidebar: oklch(0.15 0.02 120);
+  --sidebar-foreground: oklch(0.88 0.008 120);
+  --sidebar-primary: oklch(0.82 0.18 75);
+  --sidebar-primary-foreground: oklch(0.15 0.025 75);
+  --sidebar-accent: oklch(0.82 0.18 75);
+  --sidebar-accent-foreground: oklch(0.15 0.025 75);
+  --sidebar-border: oklch(0.22 0.025 120);
+  --sidebar-ring: oklch(0.82 0.18 75);
+}
+
+@theme inline {
+  /* Shadcn Core Mapping */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Charts Mapping */
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  /* Sidebar Mapping */
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Typography */
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+
+  /* Radius */
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html {
+    @apply scroll-smooth antialiased;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans min-h-screen;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold tracking-tight;
+  }
+
+  code, pre {
+    @apply font-mono;
+  }
+
+  ::selection {
+    @apply bg-primary/20 text-primary;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-muted-foreground/20 rounded-full hover:bg-muted-foreground/40;
+  }
+}
