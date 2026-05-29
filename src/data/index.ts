@@ -4,12 +4,13 @@ export type IssueSource = 'APP工单' | '邮件' | '运营反馈';
 export type IssueStatus = '待处理' | '处理中' | '待确认' | '已解决' | '已关闭' | '搁置中';
 export type Priority = '高' | '中' | '低';
 export type DelayStatus = 'none' | 'pending' | 'approved' | 'rejected';
+export type Platform = 'iOS' | 'Android' | '双平台';
 
 export interface DelayRequest {
   status: DelayStatus;
   reason: string;
-  requestedDate: string; // 申请延期到的目标日期
-  appliedAt: string;     // 申请时间
+  requestedDate: string;
+  appliedAt: string;
   respondedAt?: string;
 }
 
@@ -23,13 +24,15 @@ export interface Issue {
   source: IssueSource;
   status: IssueStatus;
   priority: Priority;
-  reporter: string;        // 问题提出者
+  platform?: Platform;       // 反馈平台 iOS/Android/双平台
+  feedbackCount?: number;    // 累计反馈次数（同一问题收到的工单数）
+  reporter: string;
   reporterAvatar: string;
-  owner: string;           // 负责人
+  owner: string;
   ownerAvatar: string;
-  expectedDate: string;    // 提出者设定的预期完成时间
-  estimatedDate?: string;  // 负责人填写的预估完成时间
-  progress: number;        // 0-100 进度百分比
+  expectedDate: string;
+  estimatedDate?: string;
+  progress: number;
   delayRequest?: DelayRequest;
   createdAt: string;
   updatedAt: string;
@@ -59,7 +62,6 @@ export const TEAM_MEMBERS = [
   { name: '刘洋',  avatar: 'LY', color: '#22c55e', email: 'liuyang@puwell.com',  wechat: 'liuyang_pw' },
 ];
 
-/* ── 计算延期天数工具 ── */
 export function getOverdueDays(issue: Issue): number {
   const deadline = issue.estimatedDate || issue.expectedDate;
   if (!deadline) return 0;
@@ -74,6 +76,7 @@ export const MOCK_ISSUES: Issue[] = [
     id: 'ISS-001', title: '酒壶机2K配网失败 - 大量US用户反馈',
     brand: 'VIRTAVO', product: '酒壶机2K', category: '配网失败',
     country: 'US', source: 'APP工单', status: '处理中', priority: '高',
+    platform: 'iOS', feedbackCount: 470,
     reporter: '陈静', reporterAvatar: 'CJ',
     owner: '李杰', ownerAvatar: 'LJ',
     expectedDate: '2026-05-12', estimatedDate: '2026-05-14',
@@ -87,6 +90,7 @@ export const MOCK_ISSUES: Issue[] = [
     id: 'ISS-002', title: '双目小蛋(EggSentry) 直播5分钟自动断开',
     brand: 'VIRTAVO', product: '双目小蛋(EggSentry)', category: '加载不出图',
     country: 'GB', source: '邮件', status: '待确认', priority: '高',
+    platform: 'iOS', feedbackCount: 38,
     reporter: '王芳', reporterAvatar: 'WF',
     owner: '王芳', ownerAvatar: 'WF',
     expectedDate: '2026-05-10', estimatedDate: '2026-05-11',
@@ -100,11 +104,11 @@ export const MOCK_ISSUES: Issue[] = [
     id: 'ISS-003', title: '熊猫机固件更新后设备无法开机',
     brand: 'VIRTAVO', product: '熊猫机', category: '不开机',
     country: 'GB', source: 'APP工单', status: '处理中', priority: '高',
+    platform: '双平台', feedbackCount: 15,
     reporter: '李杰', reporterAvatar: 'LJ',
     owner: '张伟', ownerAvatar: 'ZW',
     expectedDate: '2026-05-10',
     progress: 30,
-    // 未申请延期，已逾期
     createdAt: '2026-05-02', updatedAt: '2026-05-11',
     description: '防火墙固件更新后设备关机，充电显示红灯，断电后闪绿灯然后无反应，共15+工单。',
     tags: ['固件','不开机','批量'],
@@ -113,6 +117,7 @@ export const MOCK_ISSUES: Issue[] = [
     id: 'ISS-004', title: 'MileHub Kit 基站连接稳定性问题',
     brand: 'ShowMo', product: 'MileHub Kit', category: '设备离线',
     country: 'US', source: '运营反馈', status: '待处理', priority: '中',
+    platform: 'Android', feedbackCount: 12,
     reporter: '陈静', reporterAvatar: 'CJ',
     owner: '陈静', ownerAvatar: 'CJ',
     expectedDate: '2026-05-20',
@@ -125,6 +130,7 @@ export const MOCK_ISSUES: Issue[] = [
     id: 'ISS-005', title: '酒壶机 SD卡不识别 - IT/DE用户',
     brand: 'VIRTAVO', product: '酒壶机2K', category: '卡不识别',
     country: 'IT', source: 'APP工单', status: '搁置中', priority: '中',
+    platform: 'Android', feedbackCount: 87,
     reporter: '王芳', reporterAvatar: 'WF',
     owner: '李杰', ownerAvatar: 'LJ',
     expectedDate: '2026-05-05',
@@ -139,6 +145,7 @@ export const MOCK_ISSUES: Issue[] = [
     id: 'ISS-006', title: 'WinEye 窗装摄像头夜视效果差',
     brand: 'ShowMo', product: 'WinEye', category: '检测问题',
     country: 'US', source: '邮件', status: '处理中', priority: '中',
+    platform: '双平台', feedbackCount: 24,
     reporter: '刘洋', reporterAvatar: 'LY',
     owner: '刘洋', ownerAvatar: 'LY',
     expectedDate: '2026-05-18', estimatedDate: '2026-05-17',
@@ -151,6 +158,7 @@ export const MOCK_ISSUES: Issue[] = [
     id: 'ISS-007', title: '双目小蛋 配网成功率低于60% - JP市场',
     brand: 'VIRTAVO', product: '双目小蛋(EggSentry)', category: '配网失败',
     country: 'JP', source: 'APP工单', status: '已解决', priority: '高',
+    platform: 'iOS', feedbackCount: 203,
     reporter: '李杰', reporterAvatar: 'LJ',
     owner: '王芳', ownerAvatar: 'WF',
     expectedDate: '2026-05-01', estimatedDate: '2026-05-01',
@@ -163,6 +171,7 @@ export const MOCK_ISSUES: Issue[] = [
     id: 'ISS-008', title: '酒壶机耗电过快 - 太阳能充电不足',
     brand: 'VIRTAVO', product: '酒壶机200ai', category: '耗电快',
     country: 'US', source: 'APP工单', status: '待处理', priority: '低',
+    platform: 'Android', feedbackCount: 23,
     reporter: '陈静', reporterAvatar: 'CJ',
     owner: '张伟', ownerAvatar: 'ZW',
     expectedDate: '2026-05-25',
@@ -175,6 +184,7 @@ export const MOCK_ISSUES: Issue[] = [
     id: 'ISS-009', title: 'MileFlask 迷彩版首次绑定失败',
     brand: 'ShowMo', product: 'MileFlask', category: '配网失败',
     country: 'CA', source: '运营反馈', status: '处理中', priority: '中',
+    platform: 'iOS', feedbackCount: 3,
     reporter: '刘洋', reporterAvatar: 'LY',
     owner: '陈静', ownerAvatar: 'CJ',
     expectedDate: '2026-05-15', estimatedDate: '2026-05-16',
@@ -188,6 +198,7 @@ export const MOCK_ISSUES: Issue[] = [
     id: 'ISS-010', title: '熊猫机检测灵敏度过高误报',
     brand: 'VIRTAVO', product: '熊猫机', category: '检测问题',
     country: 'AU', source: '邮件', status: '已解决', priority: '低',
+    platform: '双平台', feedbackCount: 56,
     reporter: '王芳', reporterAvatar: 'WF',
     owner: '刘洋', ownerAvatar: 'LY',
     expectedDate: '2026-04-25', estimatedDate: '2026-04-24',
@@ -200,6 +211,7 @@ export const MOCK_ISSUES: Issue[] = [
     id: 'ISS-011', title: '国内小蛋配网失败持续高发',
     brand: 'VIRTAVO', product: '双目小蛋(EggSentry)', category: '配网失败',
     country: 'CN', source: '运营反馈', status: '处理中', priority: '高',
+    platform: '双平台', feedbackCount: 44,
     reporter: '李杰', reporterAvatar: 'LJ',
     owner: '李杰', ownerAvatar: 'LJ',
     expectedDate: '2026-05-12', estimatedDate: '2026-05-13',
@@ -212,6 +224,7 @@ export const MOCK_ISSUES: Issue[] = [
     id: 'ISS-012', title: '酒壶机账号验证码收不到',
     brand: 'VIRTAVO', product: '酒壶机2K', category: '账号相关',
     country: 'IT', source: 'APP工单', status: '已关闭', priority: '低',
+    platform: 'iOS', feedbackCount: 9,
     reporter: '王芳', reporterAvatar: 'WF',
     owner: '王芳', ownerAvatar: 'WF',
     expectedDate: '2026-04-20', estimatedDate: '2026-04-19',
@@ -254,7 +267,6 @@ export const RESOLUTION_TIME = [
   { owner: '刘洋', avg: 2.5, solved: 61 },
 ];
 
-/* ── 颜色常量（多处复用） ── */
 export const STATUS_COLORS: Record<string, { bg: string; text: string; bar: string }> = {
   '待处理': { bg: '#FF9F4318', text: '#FF9F43', bar: '#FF9F43' },
   '处理中': { bg: '#4FA7A018', text: '#4FA7A0', bar: '#4FA7A0' },
@@ -265,6 +277,11 @@ export const STATUS_COLORS: Record<string, { bg: string; text: string; bar: stri
 };
 export const PRIORITY_COLORS: Record<string, string> = { '高': '#FF6B6B', '中': '#FF9F43', '低': '#A0AEC0' };
 export const SOURCE_COLORS: Record<string, string> = { 'APP工单': '#4FA7A0', '邮件': '#6C63FF', '运营反馈': '#FF9F43' };
+export const PLATFORM_COLORS: Record<string, { color: string; bg: string; icon: string }> = {
+  'iOS':   { color: '#007AFF', bg: '#007AFF15', icon: '🍎' },
+  'Android': { color: '#34A853', bg: '#34A85315', icon: '🤖' },
+  '双平台': { color: '#6C63FF', bg: '#6C63FF15', icon: '🔀' },
+};
 export const DELAY_COLORS: Record<string, { bg: string; text: string }> = {
   none:     { bg: 'transparent', text: 'transparent' },
   pending:  { bg: '#FF9F4320', text: '#FF9F43' },
