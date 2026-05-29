@@ -1,173 +1,116 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Save, AlertCircle } from 'lucide-react';
-import { PRODUCTS, CATEGORIES, COUNTRIES, TEAM_MEMBERS } from '@/data';
+import { ArrowLeft, Send, AlertCircle } from 'lucide-react';
+import { PRODUCTS, CATEGORIES, COUNTRIES, TEAM_MEMBERS, PRIORITY_COLORS, SOURCE_COLORS } from '@/data';
 
 export default function NewIssue() {
-  const navigate = useNavigate();
-  const [brand, setBrand] = useState<'VIRTAVO' | 'ShowMo'>('VIRTAVO');
-  const [form, setForm] = useState({ title: '', product: '', category: '', country: '', source: 'APP工单', priority: '中', owner: '李杰', description: '', tags: '' });
-  const set = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }));
+  const nav = useNavigate();
+  const [brand, setBrand] = useState<'VIRTAVO'|'ShowMo'>('VIRTAVO');
+  const [f, setF] = useState({ title:'', product:'', category:'', country:'', source:'APP工单', priority:'中', owner:'李杰', expectedDate:'', description:'', tags:'' });
+  const set = (k: string, v: string) => setF(p => ({...p,[k]:v}));
 
-  const LabelRow = ({ label, required, children }: { label: string; required?: boolean; children: React.ReactNode }) => (
-    <div>
-      <label className="flex items-center gap-1 text-xs font-semibold mb-1.5" style={{ color: '#1a2035' }}>
-        {label}{required && <span style={{ color: '#FF6B6B' }}>*</span>}
-      </label>
+  const Inp = ({label, req, children}: {label:string;req?:boolean;children:React.ReactNode}) => (
+    <div style={{marginBottom:16}}>
+      <label style={{display:'flex',alignItems:'center',gap:4,fontSize:12,fontWeight:700,color:'#1a2035',marginBottom:6}}>{label}{req&&<span style={{color:'#FF6B6B'}}>*</span>}</label>
       {children}
     </div>
   );
-
-  const Input = ({ value, onChange, placeholder }: { value: string; onChange: (v: string) => void; placeholder: string }) => (
-    <input value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder}
-      className="w-full px-3 py-2.5 rounded-xl text-sm outline-none transition-all"
-      style={{ background: '#F8FAFC', border: '1.5px solid #e2e8f0', color: '#1a2035' }}
-      onFocus={e => e.currentTarget.style.borderColor = '#4FA7A0'}
-      onBlur={e => e.currentTarget.style.borderColor = '#e2e8f0'} />
-  );
-
-  const Select = ({ value, onChange, options }: { value: string; onChange: (v: string) => void; options: string[] }) => (
-    <select value={value} onChange={e => onChange(e.target.value)}
-      className="w-full px-3 py-2.5 rounded-xl text-sm outline-none"
-      style={{ background: '#F8FAFC', border: '1.5px solid #e2e8f0', color: '#1a2035', appearance: 'none' }}>
-      <option value="">请选择...</option>
-      {options.map(o => <option key={o} value={o}>{o}</option>)}
-    </select>
-  );
+  const inp = {padding:'10px 14px',borderRadius:12,border:'1.5px solid #e2e8f0',fontSize:13,outline:'none',background:'#F8FAFC',color:'#1a2035',width:'100%',boxSizing:'border-box' as const};
+  const sel = {...inp,appearance:'none' as const};
 
   return (
     <div>
-      <div className="flex items-center gap-3 mb-6">
-        <button onClick={() => navigate(-1)} className="p-2 rounded-xl" style={{ background: '#fff', color: '#64748b', boxShadow: '0 1px 8px rgba(0,0,0,0.06)' }}>
-          <ArrowLeft size={16} />
-        </button>
-        <div>
-          <h1 className="text-2xl font-bold" style={{ color: '#1a2035' }}>新建问题</h1>
-          <p className="text-sm mt-0.5" style={{ color: '#A0AEC0' }}>填写售后问题基本信息</p>
-        </div>
+      <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:20}}>
+        <button onClick={()=>nav(-1)} style={{background:'#fff',border:'none',borderRadius:12,padding:8,cursor:'pointer',boxShadow:'0 1px 8px rgba(0,0,0,0.06)'}}><ArrowLeft size={16} color="#64748b"/></button>
+        <div><h1 style={{fontSize:22,fontWeight:700,color:'#1a2035',margin:0}}>新建问题</h1><p style={{fontSize:12,color:'#94a3b8',marginTop:4}}>提出者填写问题信息、优先级及预期完成时间</p></div>
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
-        <div className="col-span-2 space-y-4">
-          {/* Basic Info */}
-          <div className="bg-white rounded-2xl p-5" style={{ boxShadow: '0 2px 16px rgba(0,0,0,0.06)' }}>
-            <div className="font-bold text-sm mb-4" style={{ color: '#1a2035' }}>基本信息</div>
-            <div className="space-y-4">
-              <LabelRow label="问题标题" required>
-                <Input value={form.title} onChange={v => set('title', v)} placeholder="简明描述问题，例：酒壶机配网失败-iOS大量反馈" />
-              </LabelRow>
-              {/* Brand */}
-              <LabelRow label="品牌" required>
-                <div className="flex gap-3">
-                  {(['VIRTAVO', 'ShowMo'] as const).map(b => (
-                    <button key={b} onClick={() => setBrand(b)}
-                      className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all"
-                      style={{ background: brand === b ? (b === 'VIRTAVO' ? '#4FA7A0' : '#D1E83E') : '#F8FAFC', color: brand === b ? (b === 'ShowMo' ? '#3d5200' : '#fff') : '#64748b', border: brand === b ? 'none' : '1.5px solid #e2e8f0' }}>
-                      {b}
-                    </button>
-                  ))}
-                </div>
-              </LabelRow>
-              <div className="grid grid-cols-2 gap-4">
-                <LabelRow label="产品" required>
-                  <Select value={form.product} onChange={v => set('product', v)} options={PRODUCTS[brand]} />
-                </LabelRow>
-                <LabelRow label="问题分类" required>
-                  <Select value={form.category} onChange={v => set('category', v)} options={CATEGORIES} />
-                </LabelRow>
+      <div style={{display:'grid',gridTemplateColumns:'1fr 300px',gap:16}}>
+        <div>
+          {/* Basic */}
+          <div style={{background:'#fff',borderRadius:16,padding:20,boxShadow:'0 2px 12px rgba(0,0,0,0.05)',marginBottom:14}}>
+            <div style={{fontWeight:700,fontSize:14,color:'#1a2035',marginBottom:16}}>📋 基本信息</div>
+            <Inp label="问题标题" req>
+              <input value={f.title} onChange={e=>set('title',e.target.value)} placeholder="简明描述问题，例：酒壶机配网失败-iOS大量反馈" style={inp}/>
+            </Inp>
+            <Inp label="品牌" req>
+              <div style={{display:'flex',gap:10}}>
+                {(['VIRTAVO','ShowMo'] as const).map(b=>(
+                  <button key={b} onClick={()=>setBrand(b)} style={{flex:1,padding:'10px 0',borderRadius:12,border:brand===b?'2px solid transparent':'2px solid #e2e8f0',background:brand===b?(b==='VIRTAVO'?'#4FA7A0':'#D1E83E'):'#F8FAFC',color:brand===b?(b==='ShowMo'?'#3d5200':'#fff'):'#64748b',fontWeight:700,fontSize:13,cursor:'pointer'}}>{b}</button>
+                ))}
               </div>
-              <LabelRow label="问题描述" required>
-                <textarea value={form.description} onChange={e => set('description', e.target.value)}
-                  placeholder="详细描述问题现象、复现步骤、影响用户量等..."
-                  rows={5}
-                  className="w-full px-3 py-2.5 rounded-xl text-sm outline-none resize-none transition-all"
-                  style={{ background: '#F8FAFC', border: '1.5px solid #e2e8f0', color: '#1a2035' }}
-                  onFocus={e => e.currentTarget.style.borderColor = '#4FA7A0'}
-                  onBlur={e => e.currentTarget.style.borderColor = '#e2e8f0'} />
-              </LabelRow>
-              <LabelRow label="标签（逗号分隔）">
-                <Input value={form.tags} onChange={v => set('tags', v)} placeholder="例：固件, iOS, 批量, 高频" />
-              </LabelRow>
+            </Inp>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
+              <Inp label="产品" req>
+                <select value={f.product} onChange={e=>set('product',e.target.value)} style={sel}><option value="">选择产品...</option>{PRODUCTS[brand].map(p=><option key={p}>{p}</option>)}</select>
+              </Inp>
+              <Inp label="问题分类" req>
+                <select value={f.category} onChange={e=>set('category',e.target.value)} style={sel}><option value="">选择分类...</option>{CATEGORIES.map(c=><option key={c}>{c}</option>)}</select>
+              </Inp>
             </div>
+            <Inp label="问题描述" req>
+              <textarea value={f.description} onChange={e=>set('description',e.target.value)} rows={5} placeholder="详细描述问题现象、复现步骤、影响用户量..." style={{...inp,resize:'none'}}/>
+            </Inp>
+            <Inp label="标签（逗号分隔）"><input value={f.tags} onChange={e=>set('tags',e.target.value)} placeholder="例：固件, iOS, 批量" style={inp}/></Inp>
           </div>
         </div>
 
-        <div className="space-y-4">
-          {/* Classification */}
-          <div className="bg-white rounded-2xl p-5" style={{ boxShadow: '0 2px 16px rgba(0,0,0,0.06)' }}>
-            <div className="font-bold text-sm mb-4" style={{ color: '#1a2035' }}>分类与来源</div>
-            <div className="space-y-3">
-              <LabelRow label="问题来源" required>
-                <div className="flex flex-col gap-2">
-                  {(['APP工单', '邮件', '运营反馈'] as const).map(s => {
-                    const colors: Record<string, string> = { 'APP工单': '#4FA7A0', '邮件': '#6C63FF', '运营反馈': '#FF9F43' };
-                    return (
-                      <button key={s} onClick={() => set('source', s)}
-                        className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium transition-all"
-                        style={{ background: form.source === s ? `${colors[s]}15` : '#F8FAFC', color: form.source === s ? colors[s] : '#64748b', border: form.source === s ? `1.5px solid ${colors[s]}50` : '1.5px solid transparent' }}>
-                        <span className="w-2 h-2 rounded-full" style={{ background: colors[s] }} />
-                        {s}
-                      </button>
-                    );
-                  })}
-                </div>
-              </LabelRow>
-              <LabelRow label="国家/地区" required>
-                <Select value={form.country} onChange={v => set('country', v)} options={COUNTRIES} />
-              </LabelRow>
+        {/* Right panel */}
+        <div style={{display:'flex',flexDirection:'column',gap:12}}>
+          {/* Reporter sets deadline + priority */}
+          <div style={{background:'#fff',borderRadius:16,padding:16,boxShadow:'0 2px 12px rgba(0,0,0,0.05)',border:'2px solid #4FA7A030'}}>
+            <div style={{fontWeight:700,fontSize:13,color:'#1a2035',marginBottom:12,display:'flex',alignItems:'center',gap:6}}>
+              <span style={{fontSize:16}}>📅</span> 提出者设定（必填）
             </div>
+            <Inp label="预期完成时间" req>
+              <input type="date" value={f.expectedDate} onChange={e=>set('expectedDate',e.target.value)} style={inp}/>
+              <p style={{fontSize:10,color:'#94a3b8',marginTop:4}}>负责人需在此日期前完成，超期需申请延期</p>
+            </Inp>
+            <Inp label="优先级" req>
+              <div style={{display:'flex',gap:8}}>
+                {(['高','中','低'] as const).map(p=>{
+                  const c = PRIORITY_COLORS[p];
+                  return <button key={p} onClick={()=>set('priority',p)} style={{flex:1,padding:'9px 0',borderRadius:12,border:f.priority===p?`2px solid ${c}50`:'2px solid transparent',background:f.priority===p?`${c}20`:'#F8FAFC',color:f.priority===p?c:'#A0AEC0',fontWeight:700,fontSize:13,cursor:'pointer'}}>{p}</button>
+                })}
+              </div>
+              {f.priority==='高' && <div style={{marginTop:8,background:'#FF6B6B10',borderRadius:10,padding:'6px 10px',fontSize:11,color:'#FF6B6B',display:'flex',alignItems:'center',gap:5}}><AlertCircle size={12}/>高优先级将自动发企微通知</div>}
+            </Inp>
           </div>
 
-          {/* Assignment */}
-          <div className="bg-white rounded-2xl p-5" style={{ boxShadow: '0 2px 16px rgba(0,0,0,0.06)' }}>
-            <div className="font-bold text-sm mb-4" style={{ color: '#1a2035' }}>优先级与负责人</div>
-            <div className="space-y-3">
-              <LabelRow label="优先级">
-                <div className="flex gap-2">
-                  {(['高', '中', '低'] as const).map(p => {
-                    const c = p === '高' ? '#FF6B6B' : p === '中' ? '#FF9F43' : '#A0AEC0';
-                    return (
-                      <button key={p} onClick={() => set('priority', p)}
-                        className="flex-1 py-2 rounded-xl text-xs font-semibold transition-all"
-                        style={{ background: form.priority === p ? `${c}20` : '#F8FAFC', color: form.priority === p ? c : '#A0AEC0', border: form.priority === p ? `2px solid ${c}50` : '2px solid transparent' }}>
-                        {p}
-                      </button>
-                    );
-                  })}
+          {/* Source + Country */}
+          <div style={{background:'#fff',borderRadius:16,padding:16,boxShadow:'0 2px 12px rgba(0,0,0,0.05)'}}>
+            <div style={{fontWeight:700,fontSize:13,color:'#1a2035',marginBottom:12}}>来源 & 地区</div>
+            <Inp label="问题来源" req>
+              {(['APP工单','邮件','运营反馈'] as const).map(s=>(
+                <button key={s} onClick={()=>set('source',s)} style={{display:'flex',alignItems:'center',gap:8,width:'100%',marginBottom:6,padding:'8px 12px',borderRadius:10,border:f.source===s?`1.5px solid ${SOURCE_COLORS[s]}50`:'1.5px solid transparent',background:f.source===s?`${SOURCE_COLORS[s]}12`:'#F8FAFC',color:f.source===s?SOURCE_COLORS[s]:'#64748b',fontWeight:f.source===s?700:400,fontSize:12,cursor:'pointer',textAlign:'left'}}>
+                  <span style={{width:8,height:8,borderRadius:99,background:SOURCE_COLORS[s],flexShrink:0,display:'inline-block'}}/>
+                  {s}
+                </button>
+              ))}
+            </Inp>
+            <Inp label="国家/地区" req>
+              <select value={f.country} onChange={e=>set('country',e.target.value)} style={sel}><option value="">选择国家...</option>{COUNTRIES.map(c=><option key={c}>{c}</option>)}</select>
+            </Inp>
+          </div>
+
+          {/* Assign */}
+          <div style={{background:'#fff',borderRadius:16,padding:16,boxShadow:'0 2px 12px rgba(0,0,0,0.05)'}}>
+            <div style={{fontWeight:700,fontSize:13,color:'#1a2035',marginBottom:10}}>指派负责人</div>
+            {TEAM_MEMBERS.map(m=>(
+              <button key={m.name} onClick={()=>set('owner',m.name)} style={{display:'flex',alignItems:'center',gap:10,width:'100%',marginBottom:6,padding:'8px 12px',borderRadius:12,border:f.owner===m.name?'1.5px solid #4FA7A050':'1.5px solid transparent',background:f.owner===m.name?'#4FA7A010':'#F8FAFC',cursor:'pointer',textAlign:'left'}}>
+                <div style={{width:28,height:28,borderRadius:99,background:m.color,display:'flex',alignItems:'center',justifyContent:'center',fontSize:10,fontWeight:700,color:'#fff',flexShrink:0}}>{m.avatar}</div>
+                <div style={{flex:1}}>
+                  <div style={{fontSize:12,fontWeight:600,color:f.owner===m.name?'#4FA7A0':'#1a2035'}}>{m.name}</div>
+                  <div style={{fontSize:10,color:'#94a3b8'}}>{m.email}</div>
                 </div>
-              </LabelRow>
-              <LabelRow label="负责人">
-                <div className="space-y-2">
-                  {TEAM_MEMBERS.map(m => (
-                    <button key={m.name} onClick={() => set('owner', m.name)}
-                      className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-sm transition-all"
-                      style={{ background: form.owner === m.name ? '#4FA7A015' : '#F8FAFC', border: form.owner === m.name ? '1.5px solid #4FA7A050' : '1.5px solid transparent' }}>
-                      <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white" style={{ background: m.color }}>{m.avatar}</div>
-                      <span className="font-medium" style={{ color: form.owner === m.name ? '#4FA7A0' : '#64748b' }}>{m.name}</span>
-                    </button>
-                  ))}
-                </div>
-              </LabelRow>
-            </div>
+              </button>
+            ))}
           </div>
 
-          {/* Submit */}
-          <button onClick={() => { alert('问题已提交！'); navigate('/issues'); }}
-            className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold text-white transition-all"
-            style={{ background: 'linear-gradient(135deg,#4FA7A0 0%,#3a8f89 100%)', boxShadow: '0 4px 16px rgba(79,167,160,0.35)' }}>
-            <Save size={15} />提交问题
+          <button onClick={()=>{if(!f.title||!f.expectedDate){alert('请填写标题和预期完成时间');return;}alert(`问题已提交！将通知负责人 ${f.owner} 并发送${f.priority==='高'?'企微+':''}邮件提醒`);nav('/issues');}} style={{background:'linear-gradient(135deg,#4FA7A0,#3a8f89)',color:'#fff',border:'none',borderRadius:14,padding:'13px 0',fontSize:14,fontWeight:700,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:8,boxShadow:'0 4px 16px rgba(79,167,160,0.35)'}}>
+            <Send size={15}/>提交问题
           </button>
-          <button onClick={() => navigate(-1)}
-            className="w-full py-2.5 rounded-xl text-sm font-medium"
-            style={{ background: '#F0F4F8', color: '#64748b' }}>
-            取消
-          </button>
-
-          {/* Tips */}
-          <div className="flex gap-2 p-3 rounded-xl" style={{ background: '#FF9F4310' }}>
-            <AlertCircle size={14} style={{ color: '#FF9F43', flexShrink: 0, marginTop: 1 }} />
-            <p className="text-[11px]" style={{ color: '#FF9F43' }}>高优先级问题将自动发送通知给负责人，并在48小时内进行首次跟进。</p>
-          </div>
+          <button onClick={()=>nav(-1)} style={{background:'#F0F4F8',color:'#64748b',border:'none',borderRadius:14,padding:'11px 0',fontSize:13,fontWeight:500,cursor:'pointer'}}>取消</button>
         </div>
       </div>
     </div>
