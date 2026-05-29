@@ -19,7 +19,9 @@ const QUICK_CMDS = [
 const LS_KEY = 'xiaoMo_aiConfig';
 export interface AiConfig { apiKey: string; model: string; baseUrl: string }
 export function getAiConfig(): AiConfig {
-  try { return JSON.parse(localStorage.getItem(LS_KEY) || '{}'); } catch { return { apiKey:'', model:'Qwen/Qwen2.5-7B-Instruct', baseUrl:'https://api.siliconflow.cn/v1' }; }
+  const saved = JSON.parse(localStorage.getItem(LS_KEY) || '{}');
+  const defaults = { apiKey:'sk-xjknnhyssxbvxrmvbwcbofiyulmgnusnfhyzcwogdpwpfofl', model:'Qwen/Qwen2.5-7B-Instruct', baseUrl:'https://api.siliconflow.cn/v1' };
+  return { ...defaults, ...saved };
 }
 export function saveAiConfig(cfg: AiConfig) { localStorage.setItem(LS_KEY, JSON.stringify(cfg)); }
 
