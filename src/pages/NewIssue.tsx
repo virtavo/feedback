@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Send, AlertCircle, Upload, Download, X, CheckCircle2, FileSpreadsheet } from 'lucide-react';
-import { PRODUCTS, CATEGORIES, COUNTRIES, TEAM_MEMBERS, PRIORITY_COLORS, SOURCE_COLORS } from '@/data';
+import { ArrowLeft, Send, AlertCircle, Upload, Download, X, CheckCircle2, FileSpreadsheet, Save } from 'lucide-react';
+import { PRODUCTS, CATEGORIES, COUNTRIES, TEAM_MEMBERS, PRIORITY_COLORS, SOURCE_COLORS, ISSUE_TYPE_COLORS, type IssueType } from '@/data';
 import { useBrandStore } from '@/store/brandStore';
 
 /* ── CSV 模板列定义 ── */
@@ -177,7 +177,8 @@ export default function NewIssue() {
   const { activeBrand } = useBrandStore();
   const [showImport, setShowImport] = useState(false);
   const [brand, setBrand] = useState<'VIRTAVO'|'ShowMo'>(activeBrand);
-  const [f, setF] = useState({ title:'', product:'', category:'', country:'', source:'APP工单', priority:'中', owner:'李杰', expectedDate:'', description:'', tags:'' });
+  const [issueType, setIssueType] = useState<IssueType>('软件');
+  const [f, setF] = useState({ title:'', product:'', category:'', country:'', source:'APP工单', priority:'中', owner:'李铧燕', expectedDate:'', description:'', tags:'', deviceSN:'', appAccount:'' });
   const set = (k: string, v: string) => setF(p => ({ ...p, [k]: v }));
 
   const Inp = ({ label, req, children }: { label: string; req?: boolean; children: React.ReactNode }) => (
@@ -210,7 +211,7 @@ export default function NewIssue() {
           style={{ display: 'flex', alignItems: 'center', gap: 7, background: showImport ? '#4FA7A0' : '#fff', color: showImport ? '#fff' : '#4FA7A0', border: '1.5px solid #4FA7A040', borderRadius: 12, padding: '9px 18px', fontSize: 13, fontWeight: 700, cursor: 'pointer', boxShadow: '0 2px 10px rgba(79,167,160,0.12)' }}
         >
           <Upload size={15} />
-          📥 批量导入工单
+          批量导入工单
         </button>
       </div>
 
@@ -241,6 +242,16 @@ export default function NewIssue() {
                 ))}
               </div>
             </Inp>
+            <Inp label="问题类型" req>
+              <div style={{ display: 'flex', gap: 8 }}>
+                {(['软件', '硬件', '服务器'] as IssueType[]).map(t => {
+                  const tc = ISSUE_TYPE_COLORS[t];
+                  return (
+                    <button key={t} onClick={() => setIssueType(t)} style={{ flex: 1, padding: '9px 0', borderRadius: 12, border: issueType === t ? `2px solid ${tc.color}50` : '2px solid transparent', background: issueType === t ? tc.bg : '#F8FAFC', color: issueType === t ? tc.color : '#A0AEC0', fontWeight: 700, fontSize: 13, cursor: 'pointer' }}>{t}问题</button>
+                  );
+                })}
+              </div>
+            </Inp>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
               <Inp label="产品" req>
                 <select value={f.product} onChange={e => set('product', e.target.value)} style={sel}><option value="">选择产品...</option>{PRODUCTS[brand].map(p => <option key={p}>{p}</option>)}</select>
@@ -255,6 +266,14 @@ export default function NewIssue() {
             <Inp label="标签（逗号分隔）">
               <input value={f.tags} onChange={e => set('tags', e.target.value)} placeholder="例：固件, iOS, 批量" style={inp} />
             </Inp>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+              <Inp label="设备 SN（选填）">
+                <input value={f.deviceSN} onChange={e => set('deviceSN', e.target.value)} placeholder="如：HK2K-US-2024-XXXXX" style={inp} />
+              </Inp>
+              <Inp label="APP 账号（选填）">
+                <input value={f.appAccount} onChange={e => set('appAccount', e.target.value)} placeholder="用户邮箱或手机号" style={inp} />
+              </Inp>
+            </div>
           </div>
         </div>
 

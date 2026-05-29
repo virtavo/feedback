@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, Zap, AlertTriangle, ChevronDown, Calendar } from 'lucide-react';
-import { MOCK_ISSUES, STATUS_COLORS, SOURCE_COLORS, PRIORITY_COLORS, PLATFORM_COLORS, getOverdueDays } from '@/data';
+import { MOCK_ISSUES, STATUS_COLORS, SOURCE_COLORS, PRIORITY_COLORS, PLATFORM_COLORS, ISSUE_TYPE_COLORS, getOverdueDays, type IssueType } from '@/data';
 import { useBrandStore } from '@/store/brandStore';
 
 const ProgressBar = ({ p }: { p: number }) => {
@@ -148,7 +148,7 @@ export default function IssueList() {
           <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 1150 }}>
             <thead>
               <tr style={{ background: '#F8FAFC', borderBottom: '1px solid #e2e8f0' }}>
-                {['编号','标题','平台','反馈次数','产品','来源','国家','负责人','优先级','状态','进度','预期/预估','延期状态','操作'].map(h => (
+                {['编号','标题','类型','平台','反馈次数','产品','来源','国家','负责人','优先级','状态','进度','预期/预估','延期状态','操作'].map(h => (
                   <th key={h} style={{ padding: '10px 12px', textAlign: 'left', fontSize: 11, fontWeight: 700, color: '#64748b', whiteSpace: 'nowrap' }}>{h}</th>
                 ))}
               </tr>
@@ -184,6 +184,14 @@ export default function IssueList() {
                           <span key={t} style={{ background: '#f1f5f9', color: '#64748b', borderRadius: 6, padding: '1px 5px', fontSize: 10 }}>{t}</span>
                         ))}
                       </div>
+                    </td>
+
+                    {/* Issue Type */}
+                    <td style={{ padding: '10px 12px', whiteSpace: 'nowrap' }}>
+                      {issue.issueType ? (() => {
+                        const tc = ISSUE_TYPE_COLORS[issue.issueType as IssueType];
+                        return <span style={{ background: tc.bg, color: tc.color, borderRadius: 20, padding: '3px 8px', fontSize: 11, fontWeight: 700 }}>{issue.issueType}</span>;
+                      })() : <span style={{ color: '#cbd5e1', fontSize: 11 }}>—</span>}
                     </td>
 
                     {/* Platform */}

@@ -119,8 +119,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <span style={{ position: 'absolute', top: 6, right: 6, width: 7, height: 7, borderRadius: 99, background: '#FF6B6B' }} />
             </button>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#f1f5f9', borderRadius: 12, padding: '6px 12px', cursor: 'pointer' }}>
-              <div style={{ width: 28, height: 28, borderRadius: 99, background: '#4FA7A0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: '#fff' }}>LJ</div>
-              <span style={{ fontSize: 13, fontWeight: 500, color: '#1a2035' }}>李杰</span>
+              <div style={{ width: 28, height: 28, borderRadius: 99, background: '#4FA7A0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: '#fff' }}>LHY</div>
+              <div>
+                <div style={{ fontSize: 12, fontWeight: 600, color: '#1a2035', lineHeight: 1.2 }}>李铧燕</div>
+                <div style={{ fontSize: 10, color: '#94a3b8', lineHeight: 1.2 }}>市场与传播经理</div>
+              </div>
             </div>
           </div>
         </header>
