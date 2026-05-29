@@ -19,7 +19,7 @@ const QUICK_CMDS = [
 const LS_KEY = 'xiaoMo_aiConfig';
 export interface AiConfig { apiKey: string; model: string; baseUrl: string }
 export function getAiConfig(): AiConfig {
-  try { return JSON.parse(localStorage.getItem(LS_KEY) || '{}'); } catch { return { apiKey:'', model:'deepseek-chat', baseUrl:'https://api.deepseek.com/v1' }; }
+  try { return JSON.parse(localStorage.getItem(LS_KEY) || '{}'); } catch { return { apiKey:'', model:'Qwen/Qwen2.5-7B-Instruct', baseUrl:'https://api.siliconflow.cn/v1' }; }
 }
 export function saveAiConfig(cfg: AiConfig) { localStorage.setItem(LS_KEY, JSON.stringify(cfg)); }
 
@@ -85,12 +85,12 @@ async function callOpenAI(
   onDone: () => void,
   onError: (e: string) => void,
 ) {
-  const url = (config.baseUrl || 'https://api.deepseek.com/v1').replace(/\/$/, '') + '/chat/completions';
+  const url = (config.baseUrl || 'https://api.siliconflow.cn/v1').replace(/\/$/, '') + '/chat/completions';
   try {
     const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${config.apiKey}` },
-      body: JSON.stringify({ model: config.model || 'deepseek-chat', messages, stream: true, temperature: 0.7, max_tokens: 1000 }),
+      body: JSON.stringify({ model: config.model || 'Qwen/Qwen2.5-7B-Instruct', messages, stream: true, temperature: 0.7, max_tokens: 1000 }),
     });
     if (!res.ok) { const e = await res.text(); onError(`API 错误 ${res.status}: ${e}`); return; }
     const reader = res.body!.getReader();
@@ -145,7 +145,7 @@ export default function XiaoMo() {
   const [input, setInput]   = useState('');
   const [typing, setTyping] = useState(false);
   const [showCfg, setShowCfg] = useState(false);
-  const [cfgForm, setCfgForm] = useState<AiConfig>({ apiKey: '', model: 'deepseek-chat', baseUrl: 'https://api.deepseek.com/v1' });
+  const [cfgForm, setCfgForm] = useState<AiConfig>({ apiKey: '', model: 'Qwen/Qwen2.5-7B-Instruct', baseUrl: 'https://api.siliconflow.cn/v1' });
   const [msgs, setMsgs] = useState<Msg[]>([{
     id: '0', role: 'bot', time: tsNow(),
     text: '你好！我是 **小末** 🤖\n\n售后智能助手，已连接实时数据。\n\n你可以问我统计数据、导入客诉、查询具体问题，或者让我帮你分析售后趋势。',
@@ -246,7 +246,7 @@ export default function XiaoMo() {
               <div style={{ fontSize:14, fontWeight:700, color:'#fff', lineHeight:1.2 }}>小末</div>
               <div style={{ fontSize:10, color:'rgba(255,255,255,0.75)', display:'flex', alignItems:'center', gap:4 }}>
                 <span style={{ width:6, height:6, borderRadius:99, background: hasKey ? '#4ade80' : '#fbbf24', display:'inline-block' }}/>
-                {hasKey ? 'AI 已连接 · ' + (aiConfig.model||'deepseek-chat') : '未配置 API Key'}
+                {hasKey ? 'AI 已连接 · ' + (aiConfig.model||'Qwen/Qwen2.5-7B-Instruct') : '未配置 API Key'}
               </div>
             </div>
             <button onClick={clearHistory} title="清空对话" style={{ background:'rgba(255,255,255,0.15)', border:'none', borderRadius:8, padding:'4px 8px', fontSize:10, color:'#fff', cursor:'pointer' }}>清空</button>
@@ -262,11 +262,11 @@ export default function XiaoMo() {
               <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
                 <input value={cfgForm.apiKey} onChange={e=>setCfgForm(p=>({...p,apiKey:e.target.value}))} placeholder="API Key (sk-...)" type="password" style={{ padding:'7px 10px', borderRadius:8, border:'1px solid #e2e8f0', fontSize:12, outline:'none', background:'#fff' }}/>
                 <div style={{ display:'flex', gap:6 }}>
-                  <input value={cfgForm.model} onChange={e=>setCfgForm(p=>({...p,model:e.target.value}))} placeholder="模型 (deepseek-chat)" style={{ flex:1, padding:'7px 10px', borderRadius:8, border:'1px solid #e2e8f0', fontSize:12, outline:'none', background:'#fff' }}/>
+                  <input value={cfgForm.model} onChange={e=>setCfgForm(p=>({...p,model:e.target.value}))} placeholder="模型 (Qwen/Qwen2.5-7B-Instruct)" style={{ flex:1, padding:'7px 10px', borderRadius:8, border:'1px solid #e2e8f0', fontSize:12, outline:'none', background:'#fff' }}/>
                   <button onClick={saveCfg} style={{ background:'linear-gradient(135deg,#4FA7A0,#6C63FF)', color:'#fff', border:'none', borderRadius:8, padding:'7px 14px', fontSize:12, fontWeight:600, cursor:'pointer' }}>保存</button>
                 </div>
-                <input value={cfgForm.baseUrl} onChange={e=>setCfgForm(p=>({...p,baseUrl:e.target.value}))} placeholder="Base URL (默认 api.deepseek.com/v1)" style={{ padding:'7px 10px', borderRadius:8, border:'1px solid #e2e8f0', fontSize:11, outline:'none', background:'#fff', color:'#94a3b8' }}/>
-                <div style={{ fontSize:10, color:'#94a3b8' }}>Key 仅存于本地浏览器。Key 填写 DeepSeek 的 sk- 开头密钥，在 platform.deepseek.com 获取。</div>
+                <input value={cfgForm.baseUrl} onChange={e=>setCfgForm(p=>({...p,baseUrl:e.target.value}))} placeholder="Base URL (默认 api.siliconflow.cn/v1 免费)" style={{ padding:'7px 10px', borderRadius:8, border:'1px solid #e2e8f0', fontSize:11, outline:'none', background:'#fff', color:'#94a3b8' }}/>
+                <div style={{ fontSize:10, color:'#94a3b8' }}>Key 仅存于本地浏览器。免费 Key 在 siliconflow.cn 注册获取，支持 Qwen/DeepSeek/GLM 等模型。</div>
               </div>
             </div>
           )}
