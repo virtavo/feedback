@@ -162,21 +162,28 @@ export default function Settings() {
           {tab==='team' && (
             <div style={card}>
               <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:16}}>
-                <span style={{fontWeight:700,fontSize:14,color:'#1a2035'}}>团队成员</span>
+                <span style={{fontWeight:700,fontSize:14,color:'#1a2035'}}>团队成员账号</span>
                 <button style={{background:'linear-gradient(135deg,#4FA7A0,#3a8f89)',color:'#fff',border:'none',borderRadius:10,padding:'8px 16px',fontSize:12,fontWeight:600,cursor:'pointer',display:'flex',alignItems:'center',gap:6}}><Plus size={13}/>添加成员</button>
               </div>
-              {TEAM_MEMBERS.map((m,idx)=>(
-                <div key={m.name} style={{display:'flex',alignItems:'center',gap:14,padding:'12px 14px',borderRadius:14,background:'#F8FAFC',border:'1px solid #e2e8f0',marginBottom:8}}>
-                  <div style={{width:40,height:40,borderRadius:99,background:m.color,display:'flex',alignItems:'center',justifyContent:'center',fontSize:12,fontWeight:700,color:'#fff',flexShrink:0}}>{m.avatar}</div>
-                  <div style={{flex:1}}>
-                    <div style={{fontSize:13,fontWeight:700,color:'#1a2035'}}>{m.name}</div>
-                    <div style={{fontSize:11,color:'#94a3b8',marginTop:2}}>{m.email} · 企微: @{m.wechat}</div>
+              {TEAM_MEMBERS.map((m)=>{
+                const roleColor = (m as any).role === '开发' ? '#6C63FF' : '#4FA7A0';
+                const roleBg   = (m as any).role === '开发' ? '#6C63FF18' : '#4FA7A018';
+                return (
+                  <div key={m.name} style={{display:'flex',alignItems:'center',gap:14,padding:'12px 14px',borderRadius:14,background:'#F8FAFC',border:'1px solid #e2e8f0',marginBottom:8}}>
+                    <div style={{width:40,height:40,borderRadius:99,background:m.color,display:'flex',alignItems:'center',justifyContent:'center',fontSize:12,fontWeight:700,color:'#fff',flexShrink:0}}>{m.avatar}</div>
+                    <div style={{flex:1,minWidth:0}}>
+                      <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:2}}>
+                        <span style={{fontSize:13,fontWeight:700,color:'#1a2035'}}>{m.name}</span>
+                        <span style={{fontSize:11,color:'#94a3b8'}}>{m.title}</span>
+                      </div>
+                      <div style={{fontSize:11,color:'#94a3b8'}}>{m.email}</div>
+                    </div>
+                    <span style={{fontSize:11,background:roleBg,color:roleColor,borderRadius:20,padding:'3px 10px',fontWeight:600,flexShrink:0}}>{(m as any).role}视角</span>
+                    <span style={{fontSize:11,background:'#22c55e18',color:'#22c55e',borderRadius:20,padding:'3px 10px',fontWeight:600,flexShrink:0}}>在职</span>
+                    <button style={{background:'none',border:'none',cursor:'pointer',padding:6,borderRadius:8,color:'#A0AEC0'}}><Trash2 size={14}/></button>
                   </div>
-                  <span style={{fontSize:11,background:'#4FA7A018',color:'#4FA7A0',borderRadius:20,padding:'3px 10px',fontWeight:600}}>VIRTAVO</span>
-                  <span style={{fontSize:11,background:'#22c55e18',color:'#22c55e',borderRadius:20,padding:'3px 10px',fontWeight:600}}>在职</span>
-                  <button style={{background:'none',border:'none',cursor:'pointer',padding:6,borderRadius:8,color:'#A0AEC0'}}><Trash2 size={14}/></button>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
 

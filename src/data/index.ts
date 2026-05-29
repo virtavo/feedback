@@ -80,11 +80,12 @@ export const CATEGORIES = [
 export const COUNTRIES = ['US','GB','IT','DE','JP','FR','CA','ES','AU','SE','CN'];
 
 export const TEAM_MEMBERS = [
-  { name: '李铧燕', avatar: 'LHY', color: '#4FA7A0', email: 'lihyuan@puwell.com',  wechat: 'lihyuan_pw', title: '市场与传播经理' },
-  { name: '王芳',   avatar: 'WF',  color: '#6C63FF', email: 'wangfang@puwell.com', wechat: 'wangfang_pw', title: '产品经理' },
-  { name: '张伟',   avatar: 'ZW',  color: '#FF9F43', email: 'zhangwei@puwell.com', wechat: 'zhangwei_pw', title: '固件工程师' },
-  { name: '陈静',   avatar: 'CJ',  color: '#FF6B6B', email: 'chenjing@puwell.com', wechat: 'chenjing_pw', title: '客服主管' },
-  { name: '刘洋',   avatar: 'LY',  color: '#22c55e', email: 'liuyang@puwell.com',  wechat: 'liuyang_pw',  title: '测试工程师' },
+  { name: '李铧燕', avatar: 'LHY', color: '#4FA7A0', email: 'lihyuan@puwell.com',  wechat: 'lihyuan_pw', title: '市场与传播经理', role: '运营' },
+  { name: '王芳',   avatar: 'WF',  color: '#6C63FF', email: 'wangfang@puwell.com', wechat: 'wangfang_pw', title: '产品经理',       role: '运营' },
+  { name: '张伟',   avatar: 'ZW',  color: '#FF9F43', email: 'zhangwei@puwell.com', wechat: 'zhangwei_pw', title: '固件工程师',     role: '开发' },
+  { name: '陈静',   avatar: 'CJ',  color: '#FF6B6B', email: 'chenjing@puwell.com', wechat: 'chenjing_pw', title: '客服主管',       role: '运营' },
+  { name: '刘洋',   avatar: 'LY',  color: '#22c55e', email: 'liuyang@puwell.com',  wechat: 'liuyang_pw',  title: '测试工程师',     role: '开发' },
+  { name: '李金彦', avatar: 'LJY', color: '#F59E0B', email: 'lijy@puwell.com',     wechat: 'lijy_pw',     title: '海外客服',       role: '运营' },
 ];
 
 export function getOverdueDays(issue: Issue): number {
