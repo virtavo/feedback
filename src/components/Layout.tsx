@@ -36,14 +36,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex h-screen bg-slate-100 overflow-hidden">
-      <aside style={{ width: collapsed ? 64 : 220, background: isDev ? '#1a1d2e' : '#fff', boxShadow: '2px 0 16px rgba(0,0,0,0.07)', flexShrink: 0, display: 'flex', flexDirection: 'column', transition: 'all 0.25s' }}>
+      <aside style={{ width: collapsed ? 64 : 220, background: '#fff', boxShadow: '2px 0 16px rgba(0,0,0,0.05)', flexShrink: 0, display: 'flex', flexDirection: 'column', transition: 'all 0.25s' }}>
         {/* Logo */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '16px 14px', borderBottom: `1px solid ${isDev ? '#2d3150' : '#f1f5f9'}`, minHeight: 64 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '16px 14px', borderBottom: '1px solid #f1f5f9', minHeight: 64 }}>
           <div style={{ width: 32, height: 32, borderRadius: 10, background: isDev ? 'linear-gradient(135deg,#6C63FF,#5a52e8)' : 'linear-gradient(135deg,#4FA7A0,#2d7d78)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             {isDev ? <Code2 size={15} color="#fff" /> : <Zap size={15} color="#fff" />}
           </div>
           {!collapsed && <div>
-            <div style={{ fontWeight: 700, fontSize: 13, color: isDev ? '#e2e8f0' : '#1a2035', lineHeight: 1.2 }}>{isDev ? '开发视角' : '售后管理'}</div>
+            <div style={{ fontWeight: 700, fontSize: 13, color: '#1a2035', lineHeight: 1.2 }}>{isDev ? '开发视角' : '售后管理'}</div>
             <div style={{ fontSize: 10, color: isDev ? '#6C63FF' : '#94a3b8' }}>{isDev ? 'Developer Hub' : 'After-Sales Hub'}</div>
           </div>}
         </div>
@@ -91,8 +91,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           })}
         </nav>
 
-        <div style={{ padding: '10px 8px', borderTop: `1px solid ${isDev ? '#2d3150' : '#f1f5f9'}` }}>
-          <button onClick={() => setCollapsed(!collapsed)} style={{ width: '100%', padding: '8px 0', borderRadius: 12, background: isDev ? '#2d3150' : '#f1f5f9', color: isDev ? '#94a3b8' : '#64748b', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, fontSize: 12 }}>
+        <div style={{ padding: '10px 8px', borderTop: '1px solid #f1f5f9' }}>
+          <button onClick={() => setCollapsed(!collapsed)} style={{ width: '100%', padding: '8px 0', borderRadius: 12, background: '#f1f5f9', color: '#64748b', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, fontSize: 12 }}>
             {collapsed ? <ChevronRight size={14} /> : <><ChevronLeft size={14} /><span>收起</span></>}
           </button>
         </div>
@@ -142,7 +142,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </div>
           </div>
         </header>
-        <main style={{ flex: 1, overflowY: 'auto', background: isDev ? '#0f1117' : '#F0F4F8', padding: 24 }}>{children}</main>
+        <main style={{ flex: 1, overflowY: 'auto', background: '#F0F4F8', padding: 24 }}>{children}</main>
       </div>
     </div>
   );

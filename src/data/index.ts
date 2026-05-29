@@ -6,6 +6,14 @@ export type Priority = '高' | '中' | '低';
 export type DelayStatus = 'none' | 'pending' | 'approved' | 'rejected';
 export type Platform = 'iOS' | 'Android' | '双平台';
 export type IssueType = '软件' | '硬件' | '服务器';
+export type ResolveType = '固件更新' | 'App版本更新' | '配置修复' | '硬件换件' | '服务器修复' | '文档指引' | '其他';
+
+export interface ResolveDetails {
+  type: ResolveType;
+  version?: string;      // 固件号 / App版本号
+  releaseDate?: string;  // 上线时间
+  notes?: string;        // 补充说明
+}
 
 export interface DelayRequest {
   status: DelayStatus;
@@ -50,6 +58,7 @@ export interface Issue {
   progress: number;
   delayRequest?: DelayRequest;
   devFeedback?: DevelopmentFeedback;
+  resolveDetails?: ResolveDetails;
   createdAt: string;
   updatedAt: string;
   resolvedAt?: string;
@@ -218,6 +227,7 @@ export const MOCK_ISSUES: Issue[] = [
       updatedAt: '2026-05-01 18:00',
     },
     createdAt: '2026-04-02', updatedAt: '2026-05-01', resolvedAt: '2026-05-01',
+    resolveDetails: { type: '固件更新', version: 'V7.04.15', releaseDate: '2026-05-01', notes: 'unicast配网模式绕过mDNS依赖，JP市场配网成功率从60%→95%' },
     description: '日本市场配网成功率长期低于60%，主要因AP隔离模式导致，已通过固件V7.04.15修复。',
     tags: ['固件','JP','已修复'],
   },
@@ -270,6 +280,7 @@ export const MOCK_ISSUES: Issue[] = [
       updatedAt: '2026-04-24 17:30',
     },
     createdAt: '2026-04-10', updatedAt: '2026-04-25', resolvedAt: '2026-04-25',
+    resolveDetails: { type: 'App版本更新', version: 'App 4.0.8014', releaseDate: '2026-04-25', notes: '新增自定义检测区域与灵敏度调节，ΔT阈值可配置1-5°C' },
     description: '澳大利亚用户反馈热成像检测误报严重，已通过App 4.0.8014新版本的检测区域设置功能解决。',
     tags: ['检测','误报','已修复'],
   },
@@ -314,6 +325,7 @@ export const MOCK_ISSUES: Issue[] = [
       updatedAt: '2026-04-20 11:00',
     },
     createdAt: '2026-04-15', updatedAt: '2026-04-20', resolvedAt: '2026-04-20',
+    resolveDetails: { type: '服务器修复', version: 'AWS SES迁移', releaseDate: '2026-04-20', notes: '更换邮件发送服务商为AWS SES，添加SPF/DKIM记录' },
     description: '意大利用户注册时无法收到验证码，已确认为邮件服务商屏蔽问题，引导用户更换邮箱后解决。',
     tags: ['账号','邮件','已关闭'],
   },

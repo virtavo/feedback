@@ -32,8 +32,19 @@ export default function IssueList() {
   const [fPriority, setFPriority] = useState('');
   const [fCountry, setFCountry]   = useState('');
   const [fPlatform, setFPlatform] = useState('');
-  const [dateFrom, setDateFrom]   = useState('');
-  const [dateTo, setDateTo]       = useState('');
+  const [dateFrom, setDateFrom]     = useState('');
+  const [dateTo, setDateTo]         = useState('');
+  const [datePreset, setDatePreset] = useState<number | null>(null);
+
+  const applyPreset = (days: number) => {
+    const now = new Date();
+    const from = new Date(now.getTime() - days * 86400000);
+    const fmt  = (d: Date) => d.toISOString().split('T')[0];
+    setDateFrom(fmt(from));
+    setDateTo(fmt(now));
+    setDatePreset(days);
+  };
+  const clearDate = () => { setDateFrom(''); setDateTo(''); setDatePreset(null); };
 
   const filtered = MOCK_ISSUES.filter(i => {
     const q = search.toLowerCase();
@@ -107,21 +118,17 @@ export default function IssueList() {
         )}
       </div>
 
-      {/* Filters row 2: platform + date range */}
+      {/* Filters row 2 */}
       <div style={{ background: '#fff', borderRadius: 16, padding: '10px 16px', marginBottom: 14, boxShadow: '0 2px 12px rgba(0,0,0,0.05)', display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
-        {/* Platform filter */}
+        {/* Platform — no emoji */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           <span style={{ fontSize: 11, color: '#94a3b8', fontWeight: 600, whiteSpace: 'nowrap' }}>平台：</span>
-          {[
-            { key: '',        label: '全部',    icon: '' },
-            { key: 'iOS',     label: 'iOS',     icon: '🍎' },
-            { key: 'Android', label: 'Android', icon: '🤖' },
-            { key: '双平台',  label: '双平台',  icon: '🔀' },
-          ].map(({ key, label, icon }) => {
+          {['全部', 'iOS', 'Android', '双平台'].map(p => {
+            const key = p === '全部' ? '' : p;
             const isActive = fPlatform === key;
             return (
-              <button key={label} onClick={() => setFPlatform(key)} style={{ padding: '5px 12px', borderRadius: 20, fontSize: 11, fontWeight: 600, background: isActive ? brandAccent : '#f1f5f9', color: isActive ? brandText : '#64748b', border: 'none', cursor: 'pointer', transition: 'all 0.15s' }}>
-                {icon && <span style={{ marginRight: 3 }}>{icon}</span>}{label}
+              <button key={p} onClick={() => setFPlatform(key)} style={{ padding: '5px 12px', borderRadius: 20, fontSize: 11, fontWeight: 600, background: isActive ? brandAccent : '#f1f5f9', color: isActive ? brandText : '#64748b', border: 'none', cursor: 'pointer', transition: 'all 0.15s' }}>
+                {p}
               </button>
             );
           })}
@@ -129,16 +136,19 @@ export default function IssueList() {
 
         <div style={{ width: 1, height: 24, background: '#e2e8f0' }} />
 
-        {/* Date range */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        {/* Date presets */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
           <Calendar size={13} color="#94a3b8" />
-          <span style={{ fontSize: 11, color: '#94a3b8', fontWeight: 600 }}>创建时间：</span>
-          <input type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)} style={{ padding: '5px 8px', borderRadius: 8, border: dateFrom ? '1px solid #4FA7A060' : '1px solid #e2e8f0', fontSize: 11, color: '#1a2035', background: dateFrom ? '#4FA7A008' : '#f8fafc', outline: 'none', cursor: 'pointer' }} />
+          <span style={{ fontSize: 11, color: '#94a3b8', fontWeight: 600 }}>时间：</span>
+          {[7, 14, 30, 90].map(d => (
+            <button key={d} onClick={() => applyPreset(d)} style={{ padding: '5px 10px', borderRadius: 20, fontSize: 11, fontWeight: 600, background: datePreset === d ? brandAccent : '#f1f5f9', color: datePreset === d ? brandText : '#64748b', border: 'none', cursor: 'pointer', transition: 'all 0.15s' }}>
+              近{d}天
+            </button>
+          ))}
+          <input type="date" value={dateFrom} onChange={e => { setDateFrom(e.target.value); setDatePreset(null); }} style={{ padding: '4px 8px', borderRadius: 8, border: dateFrom ? '1px solid #4FA7A060' : '1px solid #e2e8f0', fontSize: 11, color: '#1a2035', background: '#f8fafc', outline: 'none' }} />
           <span style={{ fontSize: 11, color: '#94a3b8' }}>—</span>
-          <input type="date" value={dateTo} onChange={e => setDateTo(e.target.value)} style={{ padding: '5px 8px', borderRadius: 8, border: dateTo ? '1px solid #4FA7A060' : '1px solid #e2e8f0', fontSize: 11, color: '#1a2035', background: dateTo ? '#4FA7A008' : '#f8fafc', outline: 'none', cursor: 'pointer' }} />
-          {(dateFrom || dateTo) && (
-            <button onClick={() => { setDateFrom(''); setDateTo(''); }} style={{ fontSize: 11, color: '#94a3b8', background: 'none', border: 'none', cursor: 'pointer' }}>清除</button>
-          )}
+          <input type="date" value={dateTo} onChange={e => { setDateTo(e.target.value); setDatePreset(null); }} style={{ padding: '4px 8px', borderRadius: 8, border: dateTo ? '1px solid #4FA7A060' : '1px solid #e2e8f0', fontSize: 11, color: '#1a2035', background: '#f8fafc', outline: 'none' }} />
+          {(dateFrom || dateTo) && <button onClick={clearDate} style={{ fontSize: 11, color: '#94a3b8', background: 'none', border: 'none', cursor: 'pointer' }}>清除</button>}
         </div>
       </div>
 

@@ -2,6 +2,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { AlertCircle, CheckCircle2, Clock, Zap, Globe, ArrowRight, TrendingUp, TrendingDown, AlertTriangle } from 'lucide-react';
 import { MOCK_ISSUES, WEEKLY_STATS, CATEGORY_STATS, SOURCE_STATS, STATUS_COLORS, SOURCE_COLORS, PRIORITY_COLORS, getOverdueDays } from '@/data';
 import { useNavigate } from 'react-router-dom';
+import { useBrandStore } from '@/store/brandStore';
 
 const card = { background: '#fff', borderRadius: 20, padding: 20, boxShadow: '0 2px 16px rgba(0,0,0,0.06)' };
 
@@ -35,6 +36,7 @@ function OverdueBadge({ issue }: { issue: (typeof MOCK_ISSUES)[0] }) {
 
 export default function Dashboard() {
   const nav = useNavigate();
+  const { activeBrand } = useBrandStore();
   const issues = MOCK_ISSUES;
   const pending = issues.filter(i => i.status === '待处理').length;
   const inProg = issues.filter(i => i.status === '处理中').length;
@@ -140,6 +142,53 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+
+      {/* ── 本周新问题看板 ── */}
+      {(() => {
+        const now = new Date();
+        const day = now.getDay() === 0 ? 6 : now.getDay() - 1; // Mon=0
+        const monday = new Date(now); monday.setDate(now.getDate() - day); monday.setHours(0,0,0,0);
+        const weekIssues = MOCK_ISSUES.filter(i => activeBrand ? i.brand === activeBrand : true).filter(i => new Date(i.createdAt) >= monday);
+        const cols: { label: string; color: string; bg: string; items: typeof weekIssues }[] = [
+          { label: '待处理', color: '#FF9F43', bg: '#FF9F4312', items: weekIssues.filter(i => i.status === '待处理') },
+          { label: '处理中', color: '#6C63FF', bg: '#6C63FF12', items: weekIssues.filter(i => i.status === '处理中') },
+          { label: '待确认', color: '#4FA7A0', bg: '#4FA7A012', items: weekIssues.filter(i => i.status === '待确认') },
+          { label: '已解决', color: '#22c55e', bg: '#22c55e12', items: weekIssues.filter(i => i.status === '已解决' || i.status === '已关闭') },
+        ];
+        return (
+          <div style={card}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+              <span style={{ fontWeight: 700, fontSize: 13, color: '#1a2035' }}>📋 本周新问题看板</span>
+              <span style={{ fontSize: 11, color: '#94a3b8' }}>本周新增 <strong style={{ color: '#1a2035' }}>{weekIssues.length}</strong> 个问题</span>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10 }}>
+              {cols.map(col => (
+                <div key={col.label} style={{ background: col.bg, borderRadius: 12, padding: 10, minHeight: 60 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: col.color }}>{col.label}</span>
+                    <span style={{ background: col.color, color: '#fff', borderRadius: 20, padding: '1px 7px', fontSize: 11, fontWeight: 700 }}>{col.items.length}</span>
+                  </div>
+                  {col.items.length === 0
+                    ? <div style={{ fontSize: 11, color: '#cbd5e1', textAlign: 'center', padding: '8px 0' }}>暂无</div>
+                    : col.items.map(i => (
+                      <div key={i.id} onClick={() => nav(`/issues/${i.id}`)} style={{ background: '#fff', borderRadius: 10, padding: '8px 10px', marginBottom: 6, cursor: 'pointer', border: '1px solid #e2e8f0', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}
+                        onMouseEnter={e => (e.currentTarget.style.boxShadow='0 3px 10px rgba(0,0,0,0.08)')}
+                        onMouseLeave={e => (e.currentTarget.style.boxShadow='0 1px 4px rgba(0,0,0,0.04)')}>
+                        <div style={{ fontSize: 10, color: '#94a3b8', fontFamily: 'monospace', marginBottom: 3 }}>{i.id}</div>
+                        <div style={{ fontSize: 11, fontWeight: 600, color: '#1a2035', lineHeight: 1.4, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{i.title}</div>
+                        <div style={{ display: 'flex', gap: 4, marginTop: 5, flexWrap: 'wrap' }}>
+                          <span style={{ background: PRIORITY_COLORS[i.priority]+'18', color: PRIORITY_COLORS[i.priority], borderRadius: 20, padding: '1px 6px', fontSize: 10 }}>{i.priority}</span>
+                          <span style={{ fontSize: 10, color: '#94a3b8' }}>{i.owner}</span>
+                        </div>
+                      </div>
+                    ))
+                  }
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      })()}
 
       {/* Urgent Issues */}
       <div style={card}>
