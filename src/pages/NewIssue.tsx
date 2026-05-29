@@ -181,6 +181,28 @@ export default function NewIssue() {
   const [f, setF] = useState({ title:'', product:'', category:'', country:'', source:'APP工单', priority:'中', owner:'李铧燕', expectedDate:'', description:'', tags:'', deviceSN:'', appAccount:'' });
   const set = (k: string, v: string) => setF(p => ({ ...p, [k]: v }));
 
+  // 附件上传
+  const imgRef = useRef<HTMLInputElement>(null);
+  const vidRef = useRef<HTMLInputElement>(null);
+  const [images, setImages] = useState<{ name: string; url: string }[]>([]);
+  const [videos, setVideos] = useState<{ name: string; size: string }[]>([]);
+
+  const handleImages = (files: FileList | null) => {
+    if (!files) return;
+    const arr = Array.from(files).slice(0, 5 - images.length);
+    arr.forEach(f => {
+      const reader = new FileReader();
+      reader.onload = e => setImages(p => [...p, { name: f.name, url: e.target?.result as string }]);
+      reader.readAsDataURL(f);
+    });
+  };
+  const handleVideo = (files: FileList | null) => {
+    if (!files || !files[0]) return;
+    const f = files[0];
+    const mb = (f.size / 1024 / 1024).toFixed(1);
+    setVideos([{ name: f.name, size: `${mb} MB` }]);
+  };
+
   const Inp = ({ label, req, children }: { label: string; req?: boolean; children: React.ReactNode }) => (
     <div style={{ marginBottom: 16 }}>
       <label style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, fontWeight: 700, color: '#1a2035', marginBottom: 6 }}>
@@ -263,6 +285,47 @@ export default function NewIssue() {
             <Inp label="问题描述" req>
               <textarea value={f.description} onChange={e => set('description', e.target.value)} rows={5} placeholder="详细描述问题现象、复现步骤、影响用户量..." style={{ ...inp, resize: 'none' }} />
             </Inp>
+
+            {/* 附件上传 */}
+            <div style={{ marginBottom: 16 }}>
+              <label style={{ fontSize: 12, fontWeight: 700, color: '#1a2035', marginBottom: 8, display: 'block' }}>附件（图片 / 视频）</label>
+              <div style={{ display: 'flex', gap: 8, marginBottom: images.length || videos.length ? 10 : 0 }}>
+                <button type="button" onClick={() => imgRef.current?.click()} style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#f1f5f9', border: '1.5px dashed #cbd5e1', borderRadius: 10, padding: '8px 14px', fontSize: 12, color: '#64748b', cursor: 'pointer', fontWeight: 600 }}>
+                  <span>🖼</span> 上传图片{images.length > 0 && ` (${images.length}/5)`}
+                </button>
+                <button type="button" onClick={() => vidRef.current?.click()} style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#f1f5f9', border: '1.5px dashed #cbd5e1', borderRadius: 10, padding: '8px 14px', fontSize: 12, color: '#64748b', cursor: 'pointer', fontWeight: 600 }}>
+                  <span>🎬</span> 上传视频{videos.length > 0 && ' (1/1)'}
+                </button>
+                <input ref={imgRef} type="file" accept="image/*" multiple style={{ display: 'none' }} onChange={e => handleImages(e.target.files)} />
+                <input ref={vidRef} type="file" accept="video/*" style={{ display: 'none' }} onChange={e => handleVideo(e.target.files)} />
+              </div>
+              {/* Image previews */}
+              {images.length > 0 && (
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 6 }}>
+                  {images.map((img, i) => (
+                    <div key={i} style={{ position: 'relative' }}>
+                      <img src={img.url} alt={img.name} style={{ width: 80, height: 80, objectFit: 'cover', borderRadius: 10, border: '1px solid #e2e8f0' }} />
+                      <button onClick={() => setImages(p => p.filter((_, j) => j !== i))} style={{ position: 'absolute', top: -6, right: -6, width: 18, height: 18, borderRadius: 99, background: '#FF6B6B', color: '#fff', border: 'none', cursor: 'pointer', fontSize: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>×</button>
+                    </div>
+                  ))}
+                  {images.length < 5 && (
+                    <button onClick={() => imgRef.current?.click()} style={{ width: 80, height: 80, borderRadius: 10, border: '2px dashed #e2e8f0', background: '#f8fafc', cursor: 'pointer', color: '#94a3b8', fontSize: 22 }}>+</button>
+                  )}
+                </div>
+              )}
+              {/* Video preview */}
+              {videos.length > 0 && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#f8fafc', borderRadius: 10, padding: '8px 12px', border: '1px solid #e2e8f0' }}>
+                  <span style={{ fontSize: 18 }}>🎬</span>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 12, fontWeight: 600, color: '#1a2035' }}>{videos[0].name}</div>
+                    <div style={{ fontSize: 10, color: '#94a3b8' }}>{videos[0].size}</div>
+                  </div>
+                  <button onClick={() => setVideos([])} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#FF6B6B', fontSize: 16 }}>×</button>
+                </div>
+              )}
+              <p style={{ fontSize: 10, color: '#94a3b8', marginTop: 4 }}>最多 5 张图片 · 1 个视频（mp4/mov）</p>
+            </div>
             <Inp label="标签（逗号分隔）">
               <input value={f.tags} onChange={e => set('tags', e.target.value)} placeholder="例：固件, iOS, 批量" style={inp} />
             </Inp>

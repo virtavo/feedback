@@ -12,6 +12,7 @@ import WeeklyReport from "@/pages/WeeklyReport";
 import Analytics from "@/pages/Analytics";
 import NewIssue from "@/pages/NewIssue";
 import Settings from "@/pages/Settings";
+import DevDashboard from "@/pages/DevDashboard";
 
 const queryClient = new QueryClient();
 
@@ -31,6 +32,7 @@ const App = () => (
             <Route path="/analytics" element={<Analytics />} />
             <Route path="/new" element={<NewIssue />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/dev" element={<DevDashboard />} />
           </Routes>
         </Layout>
       </HashRouter>

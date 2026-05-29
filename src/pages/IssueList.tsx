@@ -197,8 +197,8 @@ export default function IssueList() {
                     {/* Platform */}
                     <td style={{ padding: '10px 12px', whiteSpace: 'nowrap' }}>
                       {pc ? (
-                        <span style={{ background: pc.bg, color: pc.color, borderRadius: 20, padding: '3px 8px', fontSize: 11, fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 3 }}>
-                          {PLATFORM_COLORS[issue.platform!].icon} {issue.platform}
+                        <span style={{ background: pc.bg, color: pc.color, borderRadius: 20, padding: '3px 8px', fontSize: 11, fontWeight: 700 }}>
+                          {issue.platform}
                         </span>
                       ) : <span style={{ color: '#cbd5e1', fontSize: 11 }}>—</span>}
                     </td>
@@ -206,8 +206,8 @@ export default function IssueList() {
                     {/* Feedback count */}
                     <td style={{ padding: '10px 12px', textAlign: 'center' }}>
                       {issue.feedbackCount ? (
-                        <span style={{ background: '#6C63FF12', color: '#6C63FF', borderRadius: 20, padding: '3px 10px', fontSize: 12, fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-                          🔄 {issue.feedbackCount}
+                        <span style={{ background: '#6C63FF12', color: '#6C63FF', borderRadius: 20, padding: '3px 10px', fontSize: 12, fontWeight: 700 }}>
+                          {issue.feedbackCount} 次
                         </span>
                       ) : <span style={{ color: '#cbd5e1', fontSize: 11 }}>—</span>}
                     </td>

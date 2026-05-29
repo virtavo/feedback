@@ -3,3 +3,5 @@
 [2026-05-29 06:31] v3全部功能完成部署，等待用户提供GitHub仓库和DNS信息以完成自定义域名绑定
 [2026-05-29 06:35] 开始新轮迭代：issueType/devFeedback/SN账号/用户改名/icon清理/GitHub部署
 [2026-05-29 06:36] 开始写 data/index.ts + Layout + IssueDetail + IssueList + NewIssue + GitHub CI
+[2026-05-29 06:43] v4部署完成 https://rth38dhf3s.skywork.website - 待用户完成GitHub push和阿里云DNS配置
+[2026-05-29 06:46] 开始本轮迭代：去emoji icon、图片/视频上传、开发视角看板
