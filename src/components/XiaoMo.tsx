@@ -19,7 +19,7 @@ const QUICK_CMDS = [
 const LS_KEY = 'xiaoMo_aiConfig';
 export interface AiConfig { apiKey: string; model: string; baseUrl: string }
 export function getAiConfig(): AiConfig {
-  try { return JSON.parse(localStorage.getItem(LS_KEY) || '{}'); } catch { return { apiKey:'', model:'deepseek-chat', baseUrl:'https://api.deepseek.com/v1' }; }
+  try { return JSON.parse(localStorage.getItem(LS_KEY) || '{}'); } catch { return { apiKey:'', model:'deepseek-chat', baseUrl:'https://us2.ipc5g.com/openrouter' }; }
 }
 export function saveAiConfig(cfg: AiConfig) { localStorage.setItem(LS_KEY, JSON.stringify(cfg)); }
 
@@ -85,7 +85,7 @@ async function callOpenAI(
   onDone: () => void,
   onError: (e: string) => void,
 ) {
-  const url = (config.baseUrl || 'https://api.openai.com/v1').replace(/\/$/, '') + '/chat/completions';
+  const url = (config.baseUrl || 'https://us2.ipc5g.com/openrouter').replace(/\/$/, '') + '/chat/completions';
   try {
     const res = await fetch(url, {
       method: 'POST',
@@ -145,7 +145,7 @@ export default function XiaoMo() {
   const [input, setInput]   = useState('');
   const [typing, setTyping] = useState(false);
   const [showCfg, setShowCfg] = useState(false);
-  const [cfgForm, setCfgForm] = useState<AiConfig>({ apiKey: '', model: 'deepseek-chat', baseUrl: 'https://api.deepseek.com/v1' });
+  const [cfgForm, setCfgForm] = useState<AiConfig>({ apiKey: '', model: 'deepseek-chat', baseUrl: 'https://us2.ipc5g.com/openrouter' });
   const [msgs, setMsgs] = useState<Msg[]>([{
     id: '0', role: 'bot', time: tsNow(),
     text: '你好！我是 **小末** 🤖\n\n售后智能助手，已连接实时数据。\n\n你可以问我统计数据、导入客诉、查询具体问题，或者让我帮你分析售后趋势。',
