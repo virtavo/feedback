@@ -1,8 +1,15 @@
 import { useState } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, List, Columns, PlusCircle, BarChart3, Settings, FileText, ChevronLeft, ChevronRight, Bell, Search, Zap, Code2, Briefcase } from 'lucide-react';
+import { LayoutDashboard, List, Columns, PlusCircle, BarChart3, Settings, FileText, ChevronLeft, ChevronRight, Bell, Search, Zap, Code2, Briefcase, LogOut } from 'lucide-react';
 import XiaoMo from '@/components/XiaoMo';
 import { useBrandStore } from '@/store/brandStore';
+
+function getLoggedInUser() {
+  try {
+    const raw = localStorage.getItem('af_user');
+    return raw ? JSON.parse(raw) : null;
+  } catch { return null; }
+}
 
 const OPS_NAV = [
   { path: '/', icon: LayoutDashboard, label: '总览 Dashboard' },
@@ -28,6 +35,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const { activeBrand, setActiveBrand, activeRole, setActiveRole } = useBrandStore();
   const isDev = activeRole === '开发';
   const NAV = isDev ? DEV_NAV : OPS_NAV;
+  const currentUser = getLoggedInUser();
+
+  const handleLogout = () => {
+    localStorage.removeItem('af_logged_in');
+    localStorage.removeItem('af_user');
+    nav('/login');
+  };
 
   const brandAccent = activeBrand === 'VIRTAVO' ? '#4FA7A0' : '#c8dc00';
   const sideActiveBg = isDev
@@ -134,13 +148,27 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <Bell size={15} color="#64748b" />
               <span style={{ position: 'absolute', top: 6, right: 6, width: 7, height: 7, borderRadius: 99, background: '#FF6B6B' }} />
             </button>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#f1f5f9', borderRadius: 12, padding: '6px 12px', cursor: 'pointer' }}>
-              <div style={{ width: 28, height: 28, borderRadius: 99, background: isDev ? '#6C63FF' : '#4FA7A0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: '#fff' }}>LHY</div>
+            {/* 当前登录用户 */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#f1f5f9', borderRadius: 12, padding: '6px 12px' }}>
+              <div style={{ width: 28, height: 28, borderRadius: 99, background: currentUser?.color || '#4FA7A0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: '#fff' }}>
+                {currentUser?.avatar || 'LHY'}
+              </div>
               <div>
-                <div style={{ fontSize: 12, fontWeight: 600, color: '#1a2035', lineHeight: 1.2 }}>李铧燕</div>
-                <div style={{ fontSize: 10, color: '#94a3b8', lineHeight: 1.2 }}>{isDev ? '开发工程师' : '市场与传播经理'}</div>
+                <div style={{ fontSize: 12, fontWeight: 600, color: '#1a2035', lineHeight: 1.2 }}>{currentUser?.name || '李铧燕'}</div>
+                <div style={{ fontSize: 10, color: '#94a3b8', lineHeight: 1.2 }}>{currentUser?.title || '市场与传播经理'}</div>
               </div>
             </div>
+            {/* 退出登录 */}
+            <button
+              onClick={handleLogout}
+              title="退出登录"
+              style={{ background: '#f1f5f9', border: 'none', borderRadius: 12, padding: '7px 10px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, color: '#94a3b8', fontSize: 11, transition: 'all 0.15s' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = '#FEE2E2'; (e.currentTarget as HTMLButtonElement).style.color = '#EF4444'; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = '#f1f5f9'; (e.currentTarget as HTMLButtonElement).style.color = '#94a3b8'; }}
+            >
+              <LogOut size={13} />
+              <span>退出</span>
+            </button>
           </div>
         </header>
         <main style={{ flex: 1, overflowY: 'auto', background: '#F0F4F8', padding: 24 }}>{children}</main>
